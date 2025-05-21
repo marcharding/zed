@@ -787,6 +787,7 @@ impl crate::Keystroke {
             key_char,
         };
         println!("  Keystroke::from_xkb: {:?}", ret);
+        panic!("  -> Keystroke::from_xkb: {:?}", ret);
         ret
     }
 }
