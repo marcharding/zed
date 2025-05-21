@@ -134,13 +134,20 @@ This configuration will spawn a debug terminal where you could start you program
 This configuration allows you to debug a PHP file in your project.
 
 ```json
-{
-  "label": "PHP: Debug Active File",
-  "adapter": "php",
-  "program": "$ZED_FILE",
-  "request": "launch",
-  "cwd": "$ZED_WORKTREE_ROOT"
-}
+[
+  {
+    "adapter": "PHP",
+    "label": "PHP: Debug Active File",
+    "program": "$ZED_RELATIVE_FILE",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "args": [],
+    "env": {
+      "XDEBUG_SESSION_START": "1",
+      "XDEBUG_MODE": "debug"
+    },
+    "stop_on_entry": false
+  }
+]
 ```
 
 #### Python Configuration
