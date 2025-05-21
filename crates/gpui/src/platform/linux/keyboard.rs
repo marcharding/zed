@@ -28,36 +28,6 @@ impl LinuxKeyboardLayout {
 }
 
 #[cfg(any(feature = "wayland", feature = "x11"))]
-static XCB_CONNECTION: std::sync::LazyLock<x11rb::xcb_ffi::XCBConnection> =
-    std::sync::LazyLock::new(|| x11rb::xcb_ffi::XCBConnection::connect(None).unwrap().0);
-
-#[cfg(any(feature = "wayland", feature = "x11"))]
-fn create_test_mapper() -> LinuxKeyboardMapper {
-    use x11rb::protocol::xkb::ConnectionExt as _;
-
-    let _ = XCB_CONNECTION
-        .xkb_use_extension(
-            xkbcommon::xkb::x11::ffi::XKB_X11_MIN_MAJOR_XKB_VERSION,
-            xkbcommon::xkb::x11::ffi::XKB_X11_MIN_MINOR_XKB_VERSION,
-        )
-        .unwrap()
-        .reply()
-        .unwrap();
-    let xkb_context = xkbcommon::xkb::Context::new(xkbcommon::xkb::CONTEXT_NO_FLAGS);
-    let xkb_device_id = xkbcommon::xkb::x11::get_core_keyboard_device_id(&*XCB_CONNECTION);
-    let xkb_state = {
-        let xkb_keymap = xkbcommon::xkb::x11::keymap_new_from_device(
-            &xkb_context,
-            &*XCB_CONNECTION,
-            xkb_device_id,
-            xkbcommon::xkb::KEYMAP_COMPILE_NO_FLAGS,
-        );
-        xkbcommon::xkb::x11::state_new_from_device(&xkb_keymap, &*XCB_CONNECTION, xkb_device_id)
-    };
-    LinuxKeyboardMapper::new(&xkb_state)
-}
-
-#[cfg(any(feature = "wayland", feature = "x11"))]
 pub(crate) struct LinuxKeyboardMapper {
     code_to_key: HashMap<Keycode, String>,
     code_to_shifted_key: HashMap<Keycode, String>,
@@ -65,10 +35,6 @@ pub(crate) struct LinuxKeyboardMapper {
 
 #[cfg(any(feature = "wayland", feature = "x11"))]
 impl LinuxKeyboardMapper {
-    pub(crate) fn new_new() -> Self {
-        create_test_mapper()
-    }
-
     pub(crate) fn new(xkb_state: &xkbcommon::xkb::State) -> Self {
         let mut code_to_key = HashMap::default();
         let mut code_to_shifted_key = HashMap::default();

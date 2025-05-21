@@ -698,8 +698,7 @@ pub(crate) struct KeyboardState {
 #[cfg(any(feature = "wayland", feature = "x11"))]
 impl KeyboardState {
     pub(crate) fn new(state: xkb::State) -> Self {
-        // let mapper = LinuxKeyboardMapper::new(&state);
-        let mapper = LinuxKeyboardMapper::new_new();
+        let mapper = LinuxKeyboardMapper::new(&state);
         Self { state, mapper }
     }
 }
@@ -788,7 +787,7 @@ impl crate::Keystroke {
             key_char,
         };
         println!("  Keystroke::from_xkb: {:?}", ret);
-        // panic!("  -> Keystroke::from_xkb: {:?}", ret);
+        panic!("  -> Keystroke::from_xkb: {:?}", ret);
         ret
     }
 }
