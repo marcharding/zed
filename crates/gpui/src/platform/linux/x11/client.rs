@@ -908,6 +908,7 @@ impl X11Client {
                     if keysym.is_modifier_key() {
                         return Some(());
                     }
+                    println!("X11 Before {:#?}", keystroke);
                     if let Some(mut compose_state) = state.compose_state.take() {
                         compose_state.feed(keysym);
                         match compose_state.status() {
@@ -948,6 +949,7 @@ impl X11Client {
                     keystroke
                 };
                 drop(state);
+                println!("X11 Key pressed: {:#?}", keystroke);
                 window.handle_input(PlatformInput::KeyDown(crate::KeyDownEvent {
                     keystroke,
                     is_held: false,
