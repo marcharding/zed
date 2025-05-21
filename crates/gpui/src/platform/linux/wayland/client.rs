@@ -1270,10 +1270,12 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for WaylandClientStatePtr {
                 state: WEnum::Value(key_state),
                 ..
             } => {
+                println!("Wayland Key event: {:#?}", key);
                 state.serial_tracker.update(SerialKind::KeyPress, serial);
 
                 let focused_window = state.keyboard_focused_window.clone();
                 let Some(focused_window) = focused_window else {
+                    println!("Wayland Key event: No focused window");
                     return;
                 };
                 let focused_window = focused_window.clone();
@@ -1282,8 +1284,10 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for WaylandClientStatePtr {
                 let keycode = Keycode::from(key + MIN_KEYCODE);
                 let keysym = keyboard_state.state.key_get_one_sym(keycode);
 
+                println!("Wayland Key state: {:#?}", key_state);
                 match key_state {
                     wl_keyboard::KeyState::Pressed if !keysym.is_modifier_key() => {
+                        println!("Wayland begin to parse key");
                         let mut keystroke =
                             Keystroke::from_xkb(&keyboard_state, state.modifiers, keycode);
                         println!("\nWayland Before {:#?}", keystroke);
@@ -1291,6 +1295,7 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for WaylandClientStatePtr {
                             compose.feed(keysym);
                             match compose.status() {
                                 xkb::Status::Composing => {
+                                    println!("Wayland Composing");
                                     keystroke.key_char = None;
                                     state.pre_edit_text =
                                         compose.utf8().or(underlying_dead_key(keysym));
@@ -1302,6 +1307,7 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for WaylandClientStatePtr {
                                 }
 
                                 xkb::Status::Composed => {
+                                    println!("Wayland Composed");
                                     state.pre_edit_text.take();
                                     keystroke.key_char = compose.utf8();
                                     if let Some(keysym) = compose.keysym() {
@@ -1309,6 +1315,7 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for WaylandClientStatePtr {
                                     }
                                 }
                                 xkb::Status::Cancelled => {
+                                    println!("Wayland Cancelled");
                                     let pre_edit = state.pre_edit_text.take();
                                     let new_pre_edit = underlying_dead_key(keysym);
                                     state.pre_edit_text = new_pre_edit.clone();
