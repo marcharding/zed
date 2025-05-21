@@ -781,11 +781,13 @@ impl crate::Keystroke {
         let key_char =
             (key_utf32 >= 32 && key_utf32 != 127 && !key_utf8.is_empty()).then_some(key_utf8);
 
-        Self {
+        let ret = Self {
             modifiers,
             key,
             key_char,
-        }
+        };
+        println!("  Keystroke::from_xkb: {:?}", ret);
+        ret
     }
 }
 
